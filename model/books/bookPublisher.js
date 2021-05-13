@@ -1,11 +1,11 @@
 module.exports = ( sequelize, Sequelize) => {
-    const OrganizerBook = sequelize.define('organizadores', { 
+    const Publisher = sequelize.define('editoras', { 
        name: Sequelize.STRING 
     });
     const Books = sequelize.define('livros', { 
        name: Sequelize.STRING 
     });
-    const OrganizersBook = sequelize.define('organizadores_livros',{
+    const BookPublishers = sequelize.define('editoras_livros',{
         id: {
             type: Sequelize.BIGINT,
             allowNull: false,
@@ -13,16 +13,16 @@ module.exports = ( sequelize, Sequelize) => {
             unique: true,
             autoIncrement: true
         },     
-        organizador_id: {
+        editoras_id: {
             type: Sequelize.BIGINT,
             references: {
-                model: OrganizerBook,
+                model: Publisher,
                 key: 'id',
                 deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
             },
             allowNull: false,
             unique: false,
-            comment: 'A vinculação com a tabela de Organizadores.'
+            comment: 'A vinculação com a tabela de Editoras.'
         },      
         livro_id: {
             type: Sequelize.BIGINT,
@@ -36,5 +36,5 @@ module.exports = ( sequelize, Sequelize) => {
             comment: 'A vinculação com a tabela do Livro.'
         }, 
     });
-    return OrganizersBook
+    return BookPublishers
 };

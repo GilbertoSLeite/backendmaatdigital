@@ -5,7 +5,7 @@ module.exports = ( sequelize, Sequelize) => {
     const Books = sequelize.define('livros', { 
        name: Sequelize.STRING 
     });
-    const CoordinatorsBook = sequelize.define('diagramadores_livros',{
+    const DiagrammingsBook = sequelize.define('diagramadores_livros',{
         id: {
             type: Sequelize.BIGINT,
             allowNull: false,
@@ -36,5 +36,5 @@ module.exports = ( sequelize, Sequelize) => {
             comment: 'A vinculação com a tabela do Livro.'
         }, 
     });
-    return CoordinatorsBook
+    return DiagrammingsBook
 };

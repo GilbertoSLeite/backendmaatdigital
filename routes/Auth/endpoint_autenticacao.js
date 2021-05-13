@@ -19,16 +19,17 @@ module.exports = app => {
                 } else { 
                     bcrypt.compare(req.body.senha, usarios_post.senha, function (err, req) {
                         if (req && !err) {
-                            var token = jwt.sign(
-                                JSON.parse(JSON.stringify(usarios_post)),
-                                'nodeauthsecret',
-                                { 
-                                    expiresIn: 86400 * 30 
-                                    }
+                            var token = jwt.sign({
+                                data: JSON.parse(JSON.stringify(usarios_post)),
+                            },                                
+                            'TFMgQ29uc3VsdG9yaWEgJiBTaXN0ZW1hcyBMVERBIERFU0RFIDIwMTc=',
+                            { 
+                                expiresIn: "2h"
+                                }
                             );
                             jwt.verify(
                                 token,
-                                'nodeauthsecret',
+                                'TFMgQ29uc3VsdG9yaWEgJiBTaXN0ZW1hcyBMVERBIERFU0RFIDIwMTc=',
                                 function (err, data) {
                                     console.log((!err) ? '' : err, data);
                                 });

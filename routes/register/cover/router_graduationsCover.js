@@ -1,21 +1,28 @@
 module.exports = app => {
 
     const GraduationsCover = require('../../../model').graduacoes_capas;
+    const jwt = require('jsonwebtoken');
     let router = require('express').Router();
     const passport = require('passport');
     require('../../../config/passport')(passport);
     let getToken = require('../../../config/getToken');
+    let mySecret = 'TFMgQ29uc3VsdG9yaWEgJiBTaXN0ZW1hcyBMVERBIERFU0RFIDIwMTc='
     let token;
-    let tipoErro;
+    let typeError;
+    let errorAuth;
+    let successAuth;
     
     //Criando rotas de criação
     router.post('/',
     passport.authenticate('jwt', {
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {   
                 const graduacao_capas_post = await  GraduationsCover.create({
                     id: req.body.id,
                     capas_id: req.body.capas_id,
@@ -34,12 +41,12 @@ module.exports = app => {
         } catch (error) {
             console.error(error);
             if (error.name  ===  "SequelizeUniqueConstraintError") {
-                tipoErro = 'Já existe cadastro, ' + error.parent.constraint + ' não pode duplicar cadastro.'               
+                typeError = 'Já existe cadastro, ' + error.parent.constraint + ' não pode duplicar cadastro.'               
             }
             res.status(404).send(JSON.stringify({
                     "full_erro": error,
                     "error_detalhado": error.parent,
-                    "tipo_error": tipoErro,
+                    "tipo_error": typeError,
                     "status": false
                 }));            
         };
@@ -50,9 +57,12 @@ module.exports = app => {
     passport.authenticate('jwt', {
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {   
                 const graduacao_capas_put = await  GraduationsCover.update({
                     capas_id: req.body.capas_id,
                     graduacoes_id: req.body.graduacoes_id,
@@ -81,17 +91,31 @@ module.exports = app => {
     });
 
     //Rota para Delete de Dados
-    router.delete('/:capas_id', async function (req, res) {
-        try {            
-            const graduacao_capas_delete = await GraduationsCover.destroy({
-                where: {
-                        capas_id: req.params.capas_id
-                    }
-            });              
-            res.status(200).send(JSON.stringify({
-                "full_data": graduacao_capas_delete,
-                "status": Boolean(true),
-            }));
+    router.delete('/:capas_id', 
+    passport.authenticate('jwt', {
+        session: false
+    }), async function (req, res) {
+        try {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {   
+                const graduacao_capas_delete = await GraduationsCover.destroy({
+                    where: {
+                            capas_id: req.params.capas_id
+                        }
+                });              
+                res.status(200).send(JSON.stringify({
+                    "full_data": graduacao_capas_delete,
+                    "status": Boolean(true),
+                }));
+            } else {
+                res.status(401).send(JSON.stringify({
+                    "messagem": 'Senha não foi reconhecida.',
+                    "status": Boolean(false),
+                }));                
+            };
         } catch (error) {
             console.error(error);
             console.log(req.statusCode);
@@ -104,14 +128,28 @@ module.exports = app => {
     });
 
     //Rota para Busca de Dados
-    router.get('/', async function (req, res) {
-        try {            
-            const graduacao_capas_get = await GraduationsCover.findAll({
-                order: [
-                    ['id', 'ASC']
-                ]
-            });   
-            res.status(200).send(graduacao_capas_get);
+    router.get('/', 
+    passport.authenticate('jwt', {
+        session: false
+    }), async function (req, res) {
+        try {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) { 
+                const graduacao_capas_get = await GraduationsCover.findAll({
+                    order: [
+                        ['id', 'ASC']
+                    ]
+                });   
+                res.status(200).send(graduacao_capas_get);
+            } else {
+                res.status(401).send(JSON.stringify({
+                    "messagem": 'Senha não foi reconhecida.',
+                    "status": Boolean(false),
+                }));                
+            };
         } catch (error) {
             console.error(error);
             console.log(req.statusCode);
@@ -124,14 +162,28 @@ module.exports = app => {
     });
 
     //Rota para Busca de Dados
-    router.get('/:id', async function (req, res) {
-        try {            
-            const graduacao_capas_get = await GraduationsCover.findAll({
-                where: {
-                        id: req.params.id
-                    }
-            });   
-            res.status(200).send(graduacao_capas_get);
+    router.get('/:id', 
+    passport.authenticate('jwt', {
+        session: false
+    }), async function (req, res) {
+        try {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {         
+                const graduacao_capas_get = await GraduationsCover.findAll({
+                    where: {
+                            id: req.params.id
+                        }
+                });   
+                res.status(200).send(graduacao_capas_get);
+            } else {
+                res.status(401).send(JSON.stringify({
+                    "messagem": 'Senha não foi reconhecida.',
+                    "status": Boolean(false),
+                }));                
+            };
         } catch (error) {
             console.error(error);
             console.log(req.statusCode);

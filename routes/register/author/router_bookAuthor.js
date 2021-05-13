@@ -1,21 +1,28 @@
 module.exports = app => {
 
     const BookAuthor = require('../../../model/').autores;
+    const jwt = require('jsonwebtoken');
     let router = require('express').Router();
     const passport = require('passport');
     require('../../../config/passport')(passport);
-    let getToken = require('../../../config/getToken');
+    let getToken = require('../../../config/getToken')
+    let mySecret = 'TFMgQ29uc3VsdG9yaWEgJiBTaXN0ZW1hcyBMVERBIERFU0RFIDIwMTc='
     let token;
-    let tipoErro;
+    let typeError;
+    let errorAuth;
+    let successAuth;
     
     //Criando rotas de criação
     router.post('/',
     passport.authenticate('jwt', {
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
                 const autores_post = await BookAuthor.create({
                     id: req.body.id,
                     data_cadastro: req.body.data_cadastro,
@@ -34,20 +41,22 @@ module.exports = app => {
                     "status": Boolean(true),
                 }));
             } else {
+                console.log('Error: ',errorAuth)
                 res.status(401).send(JSON.stringify({
-                    "messagem": 'Senha não foi reconhecida.',
+                    "error": errorAuth,
+                    "messagem": 'Senha ou Token não foi reconhecida.',
                     "status": Boolean(false),
-                }));                
+                }));               
             };
         } catch (error) {
-            console.error(error);
+            console.log(error);
             if (error.name  ===  "SequelizeUniqueConstraintError") {
-                tipoErro = 'Já existe cadastro, ' + error.parent.constraint + ' não pode duplicar cadastro.'               
+                typeError = 'Já existe cadastro, ' + error.parent.constraint + ' não pode duplicar cadastro.'               
             }
             res.status(404).send(JSON.stringify({
                     "full_erro": error,
                     "error_detalhado": error.parent,
-                    "tipo_error": tipoErro,
+                    "tipo_error": typeError,
                     "status": false
                 }));            
         };
@@ -58,9 +67,12 @@ module.exports = app => {
     passport.authenticate('jwt', {
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
                 const autores_put = await BookAuthor.update({
                     data_cadastro: req.body.data_cadastro,
                     primeiro_nome_pessoa: req.body.primeiro_nome_pessoa,
@@ -81,10 +93,12 @@ module.exports = app => {
                     "status": Boolean(true),
                 }));
             } else {
+                console.log('Error: ',errorAuth)
                 res.status(401).send(JSON.stringify({
-                    "messagem": 'Senha não foi reconhecida.',
+                    "error": errorAuth,
+                    "messagem": 'Senha ou Token não foi reconhecida.',
                     "status": Boolean(false),
-                }));                
+                }));               
             };
         } catch (error) {
             res.status(404).send(JSON.stringify({
@@ -96,16 +110,32 @@ module.exports = app => {
     });
 
     //Rota para Busca de Dados
-    router.get('/', async function (req, res) {
-        try {            
+    router.get('/', 
+    passport.authenticate('jwt', {
+        session: false
+    }),async function (req, res) {
+        try {
+            token = await getToken(req.headers)        
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            })
+            if (successAuth) {         
             const autores_get = await BookAuthor.findAll({
                 order: [
                     ['id', 'ASC']
                 ]
-            });   
-            res.status(200).send(autores_get);
+            })
+            res.status(200).send(autores_get);  
+            } else {
+                console.log('Error: ',errorAuth)
+                res.status(401).send(JSON.stringify({
+                    "error": errorAuth,
+                    "messagem": 'Senha ou Token não foi reconhecida.',
+                    "status": Boolean(false),
+                }));                 
+            }; 
         } catch (error) {
-            console.error(error);
+            console.log(error);
             console.log(req.statusCode);
             res.status(404).send(JSON.stringify({
                     "full_erro": error,
@@ -116,16 +146,32 @@ module.exports = app => {
     });
 
      //Rota para Busca de Dados
-    router.get('/:primeiro_nome_pessoa', async function (req, res) {
-        try {            
+    router.get('/:primeiro_nome_pessoa', 
+    passport.authenticate('jwt', {
+        session: false
+    }),async function (req, res) {
+        try {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {      
             const autores_get_nome = await BookAuthor.findOne({
                 where: {
                     primeiro_nome_pessoa: req.params.primeiro_nome_pessoa
                 }
             });   
-            res.status(200).send(autores_get_nome);
+            res.status(200).send(autores_get_nome);  
+            } else {
+                console.log('Error: ',errorAuth)
+                res.status(401).send(JSON.stringify({
+                    "error": errorAuth,
+                    "messagem": 'Senha ou Token não foi reconhecida.',
+                    "status": Boolean(false),
+                }));                 
+            }; 
         } catch (error) {
-            console.error(error);
+            console.log(error);
             console.log(req.statusCode);
             res.status(404).send(JSON.stringify({
                     "full_erro": error,

@@ -1,11 +1,8 @@
 module.exports = async function getToken(headers) {
+    let sizeHeaders = JSON.stringify(headers).length
+    let typeAuthorization = headers.authorization.split(' ')[1]
     try {
-        if ((headers) && (headers.authorization)) {
-            let parted = await headers.authorization.split(' ');
-            return parted.length === 2 ? parted[1] : null;
-        } else {
-            return null;
-        };
+        return (((sizeHeaders > 0) && (typeAuthorization)) ? typeAuthorization : null)
     } catch (error) {
         console.log('Error em getToken: ' + error);
         return null;

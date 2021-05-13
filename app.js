@@ -23,7 +23,7 @@ let corsOptions = {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(logger('combined'));
+app.use(logger('common'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -71,6 +71,16 @@ require('./routes/register/graduation/router_graduation')(app);
 require('./routes/register/organizer/router_OrganizerBook')(app);
 require('./routes/register/organizer/router_graduationsOrganizerBook')(app);
 require('./routes/register/publisher/router_publisher')(app);
+require('./routes/book/router_book')(app);
+require('./routes/book/router_bookAuthors')(app);
+require('./routes/book/router_bookCountView')(app);
+require('./routes/book/router_bookCountDown')(app);
+require('./routes/book/router_bookCovers')(app);
+require('./routes/book/router_bookDesigners')(app);
+require('./routes/book/router_bookPublisher')(app);
+require('./routes/book/router_coordinatorsBook')(app);
+require('./routes/book/router_organizersBook')(app);
+require('./routes/book/router_responsibleEditorsBook')(app);
 
 // catch 404 and forward to error handler
 function ErroStatus(req, res, next) {

@@ -42,6 +42,12 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: true,
             comment: 'ISBN (International Standard Book Number/ Padrão Internacional de Numeração de Livro).'
         },
+        link_livro:{
+            type: Sequelize.STRING,
+            unique: false,
+            allowNull: true,
+            comment: 'Link para Download do Livro.'
+        },
         resumo_livro:{
             type: Sequelize.TEXT,
             unique: false,

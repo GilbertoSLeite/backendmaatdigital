@@ -1,20 +1,27 @@
 module.exports = app => {
 
     const Users = require('../../../model').usuarios;
+    const jwt = require('jsonwebtoken');
     let router = require('express').Router();
     const passport = require('passport');
     require('../../../config/passport')(passport);
-    let getToken = require('../../../config/getToken');
+    let getToken = require('../../../config/getToken')
+    let mySecret = 'TFMgQ29uc3VsdG9yaWEgJiBTaXN0ZW1hcyBMVERBIERFU0RFIDIwMTc='
     let token;
+    let errorAuth;
+    let successAuth;
 
     //Criando Rota de Criação de Dados
     router.post('/',
     passport.authenticate('jwt',{
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
                 const usuario_post = await Users.create({
                     id: req.body.id,
                     nome_usuario: req.body.nome_usuario,
@@ -28,9 +35,10 @@ module.exports = app => {
                     "status": Boolean(true),
                 }));
             } else {
+                console.error('Error: ',errorAuth)
                 res.status(401).send(JSON.stringify({
                     "messagem": 'Senha não foi reconhecida.'
-                }));    
+                }));     
             };            
         } catch (error) {
             console.error(error);
@@ -47,9 +55,12 @@ module.exports = app => {
     passport.authenticate('jwt',{
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
                 const usuario_put = await Users.update({
                     nome_usuario: req.body.nome_usuario,
                     email: req.body.email ,
@@ -67,9 +78,10 @@ module.exports = app => {
                     "status": Boolean(true),
                 }));
             } else {
+                console.error('Error: ',errorAuth)
                 res.status(401).send(JSON.stringify({
                     "messagem": 'Senha não foi reconhecida.'
-                }));    
+                }));       
             };            
         } catch (error) {
             console.error(error);
@@ -86,9 +98,12 @@ module.exports = app => {
     passport.authenticate('jwt', {
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
                 const usuarios_get = await Users.findAll({
                     order: [
                         ['id', 'ASC']
@@ -96,9 +111,10 @@ module.exports = app => {
                 }); 
                 res.status(200).send(usuarios_get); 
             } else {
+                console.error('Error: ',errorAuth)
                 res.status(401).send(JSON.stringify({
-                        "messagem": 'Senha não foi reconhecida.'
-                    }));                 
+                    "messagem": 'Senha não foi reconhecida.'
+                }));                  
             };            
         } catch (error) {
             console.error(error);
@@ -115,9 +131,12 @@ module.exports = app => {
     passport.authenticate('jwt', {
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
                 const usuarios_get_email = await Users.findAll({
                     where: {
                         email: req.params.email
@@ -125,9 +144,10 @@ module.exports = app => {
                 }); 
                 res.status(200).send(usuarios_get_email); 
             } else {
+                console.error('Error: ',errorAuth)
                 res.status(401).send(JSON.stringify({
-                        "messagem": 'Senha não foi reconhecida.'
-                    }));                 
+                    "messagem": 'Senha não foi reconhecida.'
+                }));                  
             };            
         } catch (error) {
             console.error(error);

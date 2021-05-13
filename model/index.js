@@ -37,5 +37,15 @@ db.editoras = require('./register/publisher/publisher')(sequelize, Sequelize);
 db.areas_conhecimentos = require('./register/ddc/mainClasses/mainclasses')(sequelize, Sequelize);
 db.subclasses_conhecimentos = require('./register/ddc/subclasses/subclasses')(sequelize, Sequelize);
 db.graduacoes = require('./register/graduation/graduation')(sequelize, Sequelize);
+db.livros = require('./books/books')(sequelize, Sequelize);
+db.autores_livros = require('./books/bookAuthors')(sequelize, Sequelize);
+db.visualizacoes_livros = require('./books/bookCountView')(sequelize, Sequelize);
+db.downloads_livros = require('./books/bookCountDown')(sequelize, Sequelize);
+db.capas_livros = require('./books/bookCovers')(sequelize, Sequelize);
+db.diagramadores_livros = require('./books/bookDesigners')(sequelize, Sequelize);
+db.editoras_livros = require('./books/bookPublisher')(sequelize, Sequelize);
+db.coordenadores_livros = require('./books/coordinatorsBook')(sequelize, Sequelize);
+db.organizadores_livros = require('./books/organizersBook')(sequelize, Sequelize);
+db.editores_responsaveis_livros = require('./books/responsibleEditorsBook')(sequelize, Sequelize);
 
 module.exports = db;

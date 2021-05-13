@@ -1,21 +1,28 @@
 module.exports = app => {
 
     const GraduationsAuthor = require('../../../model').graduacoes_autores;
+    const jwt = require('jsonwebtoken');
     let router = require('express').Router();
     const passport = require('passport');
     require('../../../config/passport')(passport);
     let getToken = require('../../../config/getToken');
+    let mySecret = 'TFMgQ29uc3VsdG9yaWEgJiBTaXN0ZW1hcyBMVERBIERFU0RFIDIwMTc='
     let token;
-    let tipoErro;
+    let typeError;
+    let errorAuth;
+    let successAuth;
     
     //Criando rotas de criação
     router.post('/',
     passport.authenticate('jwt', {
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
                 const graduacao_autores_post = await GraduationsAuthor.create({
                     id: req.body.id,
                     autores_id: req.body.autores_id,
@@ -26,20 +33,22 @@ module.exports = app => {
                     "status": Boolean(true),
                 }));
             } else {
+                console.error('Error: ',errorAuth)
                 res.status(401).send(JSON.stringify({
-                    "messagem": 'Senha não foi reconhecida.',
+                    "error": errorAuth,
+                    "messagem": 'Senha ou Token não foi reconhecida.',
                     "status": Boolean(false),
-                }));                
+                }));                    
             };
         } catch (error) {
             console.error(error);
             if (error.name  ===  "SequelizeUniqueConstraintError") {
-                tipoErro = 'Já existe cadastro, ' + error.parent.constraint + ' não pode duplicar cadastro.'               
+                typeError = 'Já existe cadastro, ' + error.parent.constraint + ' não pode duplicar cadastro.'               
             }
             res.status(404).send(JSON.stringify({
                     "full_erro": error,
                     "error_detalhado": error.parent,
-                    "tipo_error": tipoErro,
+                    "tipo_error": typeError,
                     "status": false
                 }));            
         };
@@ -50,9 +59,12 @@ module.exports = app => {
     passport.authenticate('jwt', {
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
                 const graduacao_autores_put = await GraduationsAuthor.update({
                     autores_id: req.body.autores_id,
                     graduacoes_id: req.body.graduacoes_id,
@@ -66,10 +78,12 @@ module.exports = app => {
                     "status": Boolean(true),
                 }));
             } else {
+                console.error('Error: ',errorAuth)
                 res.status(401).send(JSON.stringify({
-                    "messagem": 'Senha não foi reconhecida.',
+                    "error": errorAuth,
+                    "messagem": 'Senha ou Token não foi reconhecida.',
                     "status": Boolean(false),
-                }));                
+                }));                 
             };
         } catch (error) {
             res.status(404).send(JSON.stringify({
@@ -81,17 +95,31 @@ module.exports = app => {
     });
 
     //Rota para Delete de Dados
-    router.delete('/:autores_id', async function (req, res) {
-        try {            
-            const graduacao_autores_delete = await GraduationsAuthor.destroy({
-                where: {
-                        autores_id: req.params.autores_id
-                    }
-            });              
-            res.status(200).send(JSON.stringify({
-                "full_data": graduacao_autores_delete,
-                "status": Boolean(true),
-            }));
+    router.delete('/:autores_id', 
+    passport.authenticate('jwt', {
+        session: false
+    }), async function (req, res) {
+        try {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
+                const graduacao_autores_delete = await GraduationsAuthor.destroy({
+                    where: {
+                            autores_id: req.params.autores_id
+                        }
+                });              
+                res.status(200).send(JSON.stringify({
+                    "full_data": graduacao_autores_delete,
+                    "status": Boolean(true),
+                }));
+            } else {  
+                console.error('Error: ',errorAuth)
+                res.status(401).send(JSON.stringify({
+                    "messagem": 'Senha não foi reconhecida.'
+                }));                
+            }; 
         } catch (error) {
             console.error(error);
             console.log(req.statusCode);
@@ -104,14 +132,28 @@ module.exports = app => {
     });
 
     //Rota para Busca de Dados
-    router.get('/', async function (req, res) {
-        try {            
-            const graduacao_autores_get = await GraduationsAuthor.findAll({
-                order: [
-                    ['id', 'ASC']
-                ]
-            });   
-            res.status(200).send(graduacao_autores_get);
+    router.get('/', 
+    passport.authenticate('jwt', {
+        session: false
+    }),async function (req, res) {
+        try {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {          
+                const graduacao_autores_get = await GraduationsAuthor.findAll({
+                    order: [
+                        ['id', 'ASC']
+                    ]
+                });   
+                res.status(200).send(graduacao_autores_get);
+            } else {  
+                console.error('Error: ',errorAuth)
+                res.status(401).send(JSON.stringify({
+                    "messagem": 'Senha não foi reconhecida.'
+                }));                
+            };  
         } catch (error) {
             console.error(error);
             console.log(req.statusCode);
@@ -125,13 +167,24 @@ module.exports = app => {
 
     //Rota para Busca de Dados
     router.get('/:autores_id', async function (req, res) {
-        try {            
-            const graduacao_autores_get = await GraduationsAuthor.findAll({
-                where: {
-                        autores_id: req.params.autores_id
-                    }
-            });   
-            res.status(200).send(graduacao_autores_get);
+        token = await getToken(req.headers);
+        jwt.verify(token, mySecret, function (err, data) {
+            (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+        });
+        try {
+            if (successAuth) {        
+                const graduacao_autores_get = await GraduationsAuthor.findAll({
+                    where: {
+                            autores_id: req.params.autores_id
+                        }
+                });   
+                res.status(200).send(graduacao_autores_get);
+            } else {  
+                console.error('Error: ',errorAuth)
+                res.status(401).send(JSON.stringify({
+                    "messagem": 'Senha não foi reconhecida.'
+                }));                
+            };  
         } catch (error) {
             console.error(error);
             console.log(req.statusCode);

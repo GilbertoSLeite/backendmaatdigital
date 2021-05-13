@@ -1,28 +1,14 @@
 module.exports = ( sequelize, Sequelize) => {
-    const OrganizerBook = sequelize.define('organizadores', { 
-       name: Sequelize.STRING 
-    });
     const Books = sequelize.define('livros', { 
        name: Sequelize.STRING 
     });
-    const OrganizersBook = sequelize.define('organizadores_livros',{
+    const BookCountView = sequelize.define('visualizacoes_livros',{
         id: {
             type: Sequelize.BIGINT,
             allowNull: false,
             primaryKey: true,
             unique: true,
             autoIncrement: true
-        },     
-        organizador_id: {
-            type: Sequelize.BIGINT,
-            references: {
-                model: OrganizerBook,
-                key: 'id',
-                deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
-            },
-            allowNull: false,
-            unique: false,
-            comment: 'A vinculação com a tabela de Organizadores.'
         },      
         livro_id: {
             type: Sequelize.BIGINT,
@@ -35,6 +21,18 @@ module.exports = ( sequelize, Sequelize) => {
             unique: false,
             comment: 'A vinculação com a tabela do Livro.'
         }, 
+        ano_visualizacao: {
+            type: Sequelize.BIGINT,
+            allowNull: false,
+            unique: false,
+            comment: 'Ano em que ocorreu a visualização do livro.'
+        }, 
+        quantidade_visualizacoes: {
+            type: Sequelize.BIGINT,
+            allowNull: false,
+            unique: false,
+            comment: 'Quantidade de visualizações do livro.'
+        }
     });
-    return OrganizersBook
+    return BookCountView
 };

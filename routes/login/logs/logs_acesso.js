@@ -1,20 +1,27 @@
 module.exports = app => {
 
     const Logs_Logins = require('../../../model').logs_logins;
+    const jwt = require('jsonwebtoken');
     let router = require('express').Router();
     const passport = require('passport');
     require('../../../config/passport')(passport);
     let getToken = require('../../../config/getToken');
+    let mySecret = 'TFMgQ29uc3VsdG9yaWEgJiBTaXN0ZW1hcyBMVERBIERFU0RFIDIwMTc='
     let token;
+    let errorAuth;
+    let successAuth;
 
     //Rota de inserção de dados
     router.post('/', 
     passport.authenticate('jwt', { 
         session: false 
         }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {  
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
                 const logs_logins_post = await Logs_Logins.create({
                     id: req.body.id,
                     usuario_tentativa: req.body.usuario_tentativa,
@@ -30,10 +37,11 @@ module.exports = app => {
                     "full_data": logs_logins_post,
                     "status": Boolean(true),
                 }));              
-            } else {  
+            } else { 
+                console.error('Error: ',errorAuth)
                 res.status(401).send(JSON.stringify({
                     "messagem": 'Senha não foi reconhecida.'
-                }));                
+                }));               
             };           
         } catch (error) {
             console.error(error);
@@ -50,9 +58,12 @@ module.exports = app => {
     passport.authenticate('jwt', {
         session: false
     }), async function (req, res) {
-        token = await getToken(req.headers);
         try {
-            if (token) {
+            token = await getToken(req.headers);
+            jwt.verify(token, mySecret, function (err, data) {
+                (data ? (successAuth = Boolean(true)) : ((errorAuth = err) || (successAuth = Boolean(false))))
+            });
+            if (successAuth) {
                 const logs_logins_get = await Logs_Logins.findAll({
                     order: [
                         ['id', 'ASC']
@@ -60,9 +71,10 @@ module.exports = app => {
                 }); 
                 res.status(200).send(logs_logins_get); 
             } else {
+                console.error('Error: ',errorAuth)
                 res.status(401).send(JSON.stringify({
-                        "messagem": 'Senha não foi reconhecida.'
-                    }));                 
+                    "messagem": 'Senha não foi reconhecida.'
+                }));                      
             };            
         } catch (error) {
             console.error(error);

@@ -5,7 +5,7 @@ module.exports = ( sequelize, Sequelize) => {
     const Books = sequelize.define('livros', { 
        name: Sequelize.STRING 
     });
-    const ResponsibleEditors = sequelize.define('editores_responsaveis',{
+    const ResponsibleEditorsBook = sequelize.define('editores_responsaveis_livros',{
         id: {
             type: Sequelize.BIGINT,
             allowNull: false,
@@ -13,7 +13,7 @@ module.exports = ( sequelize, Sequelize) => {
             unique: true,
             autoIncrement: true
         },     
-        editor_id: {
+        editores_id: {
             type: Sequelize.BIGINT,
             references: {
                 model: ResponsibleEditor,
@@ -36,5 +36,5 @@ module.exports = ( sequelize, Sequelize) => {
             comment: 'A vinculação com a tabela do Livro.'
         }, 
     });
-    return ResponsibleEditors
+    return ResponsibleEditorsBook
 };
