@@ -2,6 +2,9 @@ module.exports = (sequelize, Sequelize) => {
     const Subclasses = sequelize.define('subclasses_conhecimentos', { 
        name: Sequelize.STRING 
     });
+    const Publisher = sequelize.define('editoras', { 
+       name: Sequelize.STRING 
+    });
     const Books = sequelize.define('livros', {
         id: {
             type: Sequelize.BIGINT,
@@ -36,6 +39,17 @@ module.exports = (sequelize, Sequelize) => {
             unique: false,
             comment: 'A vinculação com a tabela do Responsável pelas Classificações dos Livros.'
         },   
+        editora_id: {
+            type: Sequelize.BIGINT,
+            references: {
+                model: Publisher,
+                key: 'id',
+                deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
+            },
+            allowNull: false,
+            unique: false,
+            comment: 'A vinculação com a tabela da Editora do Livros.'
+        },
         isbn_livro:{
             type: Sequelize.STRING(13),
             unique: true,
