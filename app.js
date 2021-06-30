@@ -46,40 +46,33 @@ app.use(session({
 require('./interface/routes/auth/RouterLogin')(app);
 require('./interface/routes/countries/RouterCountries')(app);
 require('./interface/routes/login/logs/acessLog')(app);
-/* Rotas
-require('./interface/routes/login/logs/logs_acesso')(app);
-require('./interface/routes/login/user/router_users')(app);
-require('./interface/routes/login/user/router_users_id')(app);
-require('./interface/routes/Auth/endpoint_autenticacao')(app);
-require('./interface/routes/Auth/endpoit_changePassword')(app);
-require('./interface/routes/countries/router_countries')(app);
-require('./interface/routes/register/author/router_bookAuthor')(app);
-require('./interface/routes/register/author/router_graduationsAuthor')(app);
-require('./interface/routes/register/coordinator/router_coordinatorBook')(app);
-require('./interface/routes/register/coordinator/router_graduationsCoordinator')(app);
-require('./interface/routes/register/cover/router_bookCover')(app);
-require('./interface/routes/register/cover/router_graduationsCover')(app);
-require('./interface/routes/register/ddc/mainClasses/router_mainclasses')(app);
-require('./interface/routes/register/ddc/subclasses/router_subclasses')(app);
-require('./interface/routes/register/diagramming/router_diagrammingBook')(app);
-require('./interface/routes/register/diagramming/router_graduationsDiagramming')(app);
-require('./interface/routes/register/editor/router_responsibleEditor')(app);
-require('./interface/routes/register/editor/router_graduations_responsibleEditor')(app);
-require('./interface/routes/register/graduation/router_graduation')(app);
-require('./interface/routes/register/organizer/router_OrganizerBook')(app);
-require('./interface/routes/register/organizer/router_graduationsOrganizerBook')(app);
-require('./interface/routes/register/publisher/router_publisher')(app);
-require('./interface/routes/book/router_book')(app);
-require('./interface/routes/book/router_bookAuthors')(app);
-require('./interface/routes/book/router_bookCountView')(app);
-require('./interface/routes/book/router_bookCountDown')(app);
-require('./interface/routes/book/router_bookCovers')(app);
-require('./interface/routes/book/router_bookRespCovers')(app);
-require('./interface/routes/book/router_bookDesigners')(app);
-require('./interface/routes/book/router_bookPublisher')(app);
-require('./interface/routes/book/router_coordinatorsBook')(app);
-require('./interface/routes/book/router_organizersBook')(app);
-require('./interface/routes/book/router_responsibleEditorsBook')(app); */
+require('./interface/routes/book/routerBook')(app);
+require('./interface/routes/book/routerBooksAuthors')(app);
+require('./interface/routes/book/routerBooksCoordinators')(app);
+require('./interface/routes/book/routerBooksCountDownload')(app);
+require('./interface/routes/book/routerBooksCountView')(app);
+require('./interface/routes/book/routerBooksCovers')(app);
+require('./interface/routes/book/routerBooksDesigners')(app);
+require('./interface/routes/book/routerBooksOrganizers')(app);
+require('./interface/routes/book/routerBooksPublisher')(app);
+require('./interface/routes/book/routerBooksRespCovers')(app);
+require('./interface/routes/book/routerBooksResponsibleEditors')(app);
+require('./interface/routes/register/areasConhecimentos/mainClasses/routerMainClasses')(app);
+require('./interface/routes/register/areasConhecimentos/subclasses/routerSubClasses')(app);
+require('./interface/routes/register/authors/routerBookAuthors')(app);
+require('./interface/routes/register/authors/routerGraduationsAuthors')(app);
+require('./interface/routes/register/coordinators/routerCoordinatorsBooks')(app);
+require('./interface/routes/register/coordinators/routerGraduationsCoordinatos')(app);
+require('./interface/routes/register/covers/routerBooksCovers')(app);
+require('./interface/routes/register/covers/routerBooksGraduationsCovers')(app);
+require('./interface/routes/register/diagrammings/routerDiagrammingsBooks')(app);
+require('./interface/routes/register/diagrammings/routerGraduationsDiagrammingsBooks')(app);
+require('./interface/routes/register/editors/routerBookEditor')(app);
+require('./interface/routes/register/editors/routerGraduationBookEditor')(app);
+require('./interface/routes/register/graduations/routerGraduations')(app);
+require('./interface/routes/register/organizers/routerOrganizersBooks')(app);
+require('./interface/routes/register/organizers/routerGraduationsOrganizersBooks')(app);
+require('./interface/routes/register/publishers/routerPublisher')(app);
 
 // catch 404 and forward to error handler
 function ErroStatus(req, res, next) {

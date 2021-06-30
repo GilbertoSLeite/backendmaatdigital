@@ -1,4 +1,4 @@
-export default async function getToken(headers) {
+module.exports = async function getToken(headers) {
   const sizeHeaders = JSON.stringify(headers).length;
   const typeAuthorization = headers.authorization.split(' ')[1];
   try {
@@ -6,4 +6,4 @@ export default async function getToken(headers) {
   } catch (error) {
     return Error(error);
   }
-}
+};
